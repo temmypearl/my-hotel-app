@@ -18,7 +18,6 @@ const Login = () => {
       [name]: value,
     }));
 
-
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }));
     }
@@ -68,32 +67,32 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#1b1b1b] py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full bg-black p-8 rounded-lg shadow-xl">
-        <div className="text-center mb-10">
-          <h1 className="text-3xl font-bold text-[#aa8453] mb-2 font-serif">
+    <div className="min-h-screen flex items-center justify-center bg-[#1b1b1b] py-6 px-3 sm:py-12 sm:px-6 lg:px-8">
+      <div className="w-full max-w-xs sm:max-w-md bg-black p-4 sm:p-8 rounded-lg shadow-xl">
+        <div className="text-center mb-6 sm:mb-10">
+          <h1 className="text-2xl sm:text-3xl font-bold text-[#aa8453] mb-1 sm:mb-2 font-serif">
             {isLogin ? "Welcome Back" : "Create Account"}
           </h1>
-          <p className="text-gray-300 text-sm font-serif">
+          <p className="text-gray-300 text-xs sm:text-sm font-serif">
             {isLogin
               ? "Sign in to access your account"
               : "Join us for exclusive benefits"}
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
           {!isLogin && (
             <div>
               <div className="relative">
-                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#aa8453]" size={20} />
+                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#aa8453]" size={18} />
                 <input
                   type="text"
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
                   placeholder="Full Name"
-                  className={`pl-10 w-full py-3 bg-gray-800 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-[#aa8453] ${
-                    errors.name ? "border-red-500" : ""
+                  className={`pl-10 w-full py-2 sm:py-3 text-sm bg-gray-800 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-[#aa8453] ${
+                    errors.name ? "border border-red-500" : ""
                   }`}
                 />
               </div>
@@ -105,15 +104,15 @@ const Login = () => {
 
           <div>
             <div className="relative">
-              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#aa8453]" size={20} />
+              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#aa8453]" size={18} />
               <input
                 type="email"
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
                 placeholder="Email Address"
-                className={`pl-10 w-full py-3 bg-gray-800 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-[#aa8453] ${
-                  errors.email ? "border-red-500" : ""
+                className={`pl-10 w-full py-2 sm:py-3 text-sm bg-gray-800 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-[#aa8453] ${
+                  errors.email ? "border border-red-500" : ""
                 }`}
               />
             </div>
@@ -124,15 +123,15 @@ const Login = () => {
 
           <div>
             <div className="relative">
-              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#aa8453]" size={20} />
+              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#aa8453]" size={18} />
               <input
                 type="password"
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
                 placeholder="Password"
-                className={`pl-10 w-full py-3 bg-gray-800 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-[#aa8453] ${
-                  errors.password ? "border-red-500" : ""
+                className={`pl-10 w-full py-2 sm:py-3 text-sm bg-gray-800 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-[#aa8453] ${
+                  errors.password ? "border border-red-500" : ""
                 }`}
               />
             </div>
@@ -144,15 +143,15 @@ const Login = () => {
           {!isLogin && (
             <div>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#aa8453]" size={20} />
+                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#aa8453]" size={18} />
                 <input
                   type="password"
                   name="confirmPassword"
                   value={formData.confirmPassword}
                   onChange={handleChange}
                   placeholder="Confirm Password"
-                  className={`pl-10 w-full py-3 bg-gray-800 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-[#aa8453] ${
-                    errors.confirmPassword ? "border-red-500" : ""
+                  className={`pl-10 w-full py-2 sm:py-3 text-sm bg-gray-800 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-[#aa8453] ${
+                    errors.confirmPassword ? "border border-red-500" : ""
                   }`}
                 />
               </div>
@@ -166,7 +165,7 @@ const Login = () => {
             <div className="flex justify-end">
               <a
                 href="#"
-                className="text-sm text-[#aa8453] hover:text-[#d5a464]"
+                className="text-xs sm:text-sm text-[#aa8453] hover:text-[#d5a464]"
               >
                 Forgot password?
               </a>
@@ -176,14 +175,14 @@ const Login = () => {
           <div>
             <button
               type="submit"
-              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-white bg-[#aa8453] hover:bg-[#d5a464] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#aa8453] transition duration-300"
+              className="w-full flex justify-center py-2 sm:py-3 px-4 border border-transparent rounded-md shadow-sm text-sm text-white bg-[#aa8453] hover:bg-[#d5a464] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#aa8453] transition duration-300"
             >
               {isLogin ? "Sign In" : "Register"}
             </button>
           </div>
 
-          <div className="flex items-center justify-center">
-            <div className="text-sm">
+          <div className="flex items-center justify-center mt-4">
+            <div className="text-xs sm:text-sm">
               <button
                 type="button"
                 onClick={toggleMode}
@@ -196,8 +195,6 @@ const Login = () => {
             </div>
           </div>
         </form>
-
-     
       </div>
     </div>
   );
