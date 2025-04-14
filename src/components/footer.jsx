@@ -8,7 +8,7 @@ const Footer = () => {
         <footer className="bg-[#1b1b1b] text-white py-16">
             <div className="container mx-auto px-4 grid md:grid-cols-4 gap-8 font-serif">
                 <div>
-                    <h3 className="text-2xl text-[#aa8453] font-semibold mb-4 uppercase tracking-wider">THE HOTEL</h3>
+                    <h3 className="text-2xl text-[#aa8453] font-semibold mb-4 uppercase tracking-wider">UI HOTEL</h3>
                     <p className="text-white mb-4">
                         Experience unparalleled luxury and comfort in our exquisite hotel, where every moment is crafted to perfection.
                     </p>
@@ -39,8 +39,8 @@ const Footer = () => {
                     <h4 className="text-xl font-medium mb-4 uppercase tracking-wider text-[#aa8453]">Contact</h4>
                     <ul className="space-y-3">
                         <li className="flex items-center space-x-3">
-                            <MapPin className="text-[#aa8453]" size={20} />
-                            <span>123 Agbowo Rd, UI, Ibadan</span>
+                            <MapPin className="text-[#aa8453]" size={30} />
+                            <span>Conference Centre Building, Chaptel Road, University of Ibadan, Ibadan, Nigeria</span>
                         </li>
                         <li className="flex items-center space-x-3">
                             <Phone className="text-[#aa8453]" size={20} />
@@ -81,7 +81,7 @@ const Footer = () => {
         <footer>
         <div className="border-t border-gray-800  pt-6 text-center bg-black">
                 <p className="text-gray-400">
-                    © {new Date().getFullYear()} The Hotel. All Rights Reserved.
+                    © {new Date().getFullYear()} UI Hotel. All Rights Reserved.
                 </p>
                 <div className="mt-4 space-x-4">
                     <a href="#privacy" className="text-gray-300 hover:text-white">Privacy Policy</a>

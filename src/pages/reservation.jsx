@@ -57,8 +57,8 @@ const Reservation = ({ onSubmit }) => {
         // Check-in date validation
         if (!formData.checkIn) {
             newErrors.checkIn = 'Check-in date is required';
-        } else if (checkInDate < today) {
-            newErrors.checkIn = 'Check-in date cannot be in the past';
+        // } else if (checkInDate < today) {
+        //     newErrors.checkIn = 'Check-in date cannot be in the past';
         }
 
         // Check-out date validation

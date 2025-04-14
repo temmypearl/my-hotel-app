@@ -42,7 +42,7 @@ const Navbar = () => {
       >
         <div>
           <Link to="/" className="text-[#aa8453] text-xl lg:text-xl font-semibold">
-            THE HOTEL
+            UI HOTEL
           </Link>
         </div>
 

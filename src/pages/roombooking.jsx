@@ -23,7 +23,7 @@ const RoomBooking = ({ formData, onContinue }) => {
   const roomData = [
     {
       id: 'junior',
-      name: 'Junior Suite',
+      name: 'Double Deluxe',
       price: 145000, // Price as a number for calculations
       displayPrice: 'NGN145,000', // Formatted price for display
       amenities: ['Breakfast', 'WiFi', 'Gym', 'Satellite TV', 'Restaurant on-site'],
@@ -32,7 +32,7 @@ const RoomBooking = ({ formData, onContinue }) => {
     },
     {
       id: 'double',
-      name: 'Double Suite',
+      name: 'Royal Standard',
       price: 150000,
       displayPrice: 'NGN150,000',
       amenities: ['Breakfast', 'WiFi', 'Gym', 'Satellite TV', 'Restaurant on-site'],
@@ -41,7 +41,7 @@ const RoomBooking = ({ formData, onContinue }) => {
     },
     {
       id: 'deluxe',
-      name: 'Deluxe Room',
+      name: 'Royal Executive',
       price: 165000,
       displayPrice: 'NGN165,000',
       amenities: ['Breakfast', 'WiFi', 'Gym', 'Satellite TV', 'Restaurant on-site'],
@@ -50,7 +50,7 @@ const RoomBooking = ({ formData, onContinue }) => {
     },
     {
       id: 'family',
-      name: 'Family Room',
+      name: 'Executive Suite',
       price: 185000,
       displayPrice: 'NGN185,000',
       amenities: ['Breakfast', 'WiFi', 'Gym', 'Satellite TV', 'Restaurant on-site'],
@@ -59,7 +59,16 @@ const RoomBooking = ({ formData, onContinue }) => {
     },
     {
       id: 'superior',
-      name: 'Superior Room',
+      name: 'Luxury King',
+      price: 200000,
+      displayPrice: 'NGN200,000',
+      amenities: ['Breakfast', 'WiFi', 'Gym', 'Satellite TV', 'Restaurant on-site'],
+      image: "https://duruthemes.com/demo/html/cappa/demo1-dark/img/rooms/7.jpg",
+      date: formData?.checkIn ? new Date(formData.checkIn).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '03 Apr, 2025'
+    },
+    {
+      id: 'superior',
+      name: 'Premium Suite',
       price: 200000,
       displayPrice: 'NGN200,000',
       amenities: ['Breakfast', 'WiFi', 'Gym', 'Satellite TV', 'Restaurant on-site'],

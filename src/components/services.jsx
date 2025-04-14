@@ -5,7 +5,7 @@ const Services = () => {
   const amenities = [
     {
       icon: <House />,
-      title: 'Rooms & Apartment',
+      title: 'Laundry Services',
       description: 'Erat ipsum justo amet duo et elitr dolor, est duo duo eos lorem sed diam stet diam sed stet lorem.'
     },
     {
@@ -20,7 +20,7 @@ const Services = () => {
     },
     {
       icon:<Gamepad2 />,
-      title: 'Sports & Gaming',
+      title: 'Rooms & Suite',
       description: 'Erat ipsum justo amet duo et elitr dolor, est duo duo eos lorem sed diam stet diam sed stet lorem.'
     },
     {

@@ -9,6 +9,7 @@ import Home from "./pages/Home";
 import Aboutus from "./pages/aboutus";
 import Reservation from "./pages/reservation";
 import RoomBooking from "./pages/roombooking";
+import Contact from "./pages/contact";
 import Payment from "./pages/payment";
 import Login from "./pages/login";
 import Services from "./pages/service";
@@ -18,6 +19,7 @@ function App() {
   const [reservationData, setReservationData] = useState(null);
   const [selectedRooms, setSelectedRooms] = useState(null);
 
+  
   const handleReservationSubmit = (formData) => {
     console.log("Reservation data received:", formData);
     setReservationData(formData);
@@ -28,7 +30,7 @@ function App() {
   };
   return (
       <div className="app">
-        <Navbar />
+       <Navbar />
         <main className="min-h-screen">
           <Routes>
             <Route path="/" element={<Home />} />
@@ -75,6 +77,7 @@ function App() {
               }
             />
             <Route path="/login" element={<Login />} />
+          <Route path="/contact" element={<Contact />}/>
           </Routes>
         </main>
         <Footer />

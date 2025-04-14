@@ -10,7 +10,7 @@ const About = () => {
                     <h2 className="text-2xl lg:text-4xl tracking-widest pt-3">Enjoy a Luxury <br />Experience</h2>
                     <div className="pt-4 lg:pt-6">
                         <p className="text-sm lg:text-base">
-                            Welcome to THE HOTEL, where luxury meets comfort in the heart of hospitality. Our mission is to 
+                            Welcome to UI HOTEL, where luxury meets comfort in the heart of hospitality. Our mission is to 
                             provide a unique and unforgettable experience for each guest, offering world-class service in a 
                             relaxing and elegant environment.Whether you're here for business, leisure, or a special occasion,
                             our thoughtfully designed rooms and suites cater to all your needs. With a team dedicated to exceeding 
@@ -19,7 +19,7 @@ const About = () => {
                         <p className="pb-3 text-sm lg:text-base">
                             Our facilities are equipped with everything you need for a memorable stay, from state-of-the-art amenities to 
                             exceptional dining options. We believe that every guest deserves the best, and we pride ourselves on creating a warm 
-                            and welcoming atmosphere.Come experience THE HOTEL—where every detail is designed with you in mind.
+                            and welcoming atmosphere.Come experience UI HOTEL—where every detail is designed with you in mind.
                         </p>
                         <div className="flex items-center space-x-2"> 
                           <Phone className="size-10 lg:size-10 text-[#aa8453]" />  
