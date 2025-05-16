@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 const Navbar = () => {
   const [nav, setNav] = useState(false);
   const [scrolled, setScrolled] = useState(false); 
+  const location = useLocation(); // Get current location/path
 
   const handleNav = () => setNav(!nav);
 
@@ -35,6 +36,15 @@ const Navbar = () => {
     };     
   }, []);
 
+  // Check if the current path matches the nav item path
+  // Don't apply active effect to home page
+  const isActive = (path) => {
+    if (path === "/") {
+      return false; // Never show underline for home
+    }
+    return location.pathname === path;
+  };
+
   return (
     <>
       <div
@@ -52,17 +62,21 @@ const Navbar = () => {
               <li key={index}>
                 <Link 
                   to={item.path}
-                  className={`cursor-pointer ${
-                    item.label === "HOME" ? "text-[#aa8453]" : "text-white hover:text-[#aa8453]"
+                  className={`cursor-pointer relative ${
+                    item.label === "HOME" ? "text-[#aa8453]" : 
+                    isActive(item.path) ? "text-[#aa8453]" : "text-white hover:text-[#aa8453]"
                   }`}
                 >
                   {item.label}
+                  {isActive(item.path) && (
+                    <span className="absolute bottom-0 left-0 w-full h-0.5 bg-[#aa8453] -mb-1"></span>
+                  )}
                 </Link>
               </li>
             ))}
           </ul>
 
-          <ul>
+          {/* <ul>
             <li className="hidden md:flex">
               <Link 
                 to="/login"
@@ -71,7 +85,7 @@ const Navbar = () => {
                 LOGIN
               </Link>
             </li>
-          </ul>
+          </ul> */}
         </div>
 
         {/* Mobile Screen Toggle */}
@@ -97,20 +111,33 @@ const Navbar = () => {
                   to={item.path}
                   onClick={closeMobileMenu}
                   className={`
-                    cursor-pointer 
-                    ${item.isButton 
-                      ? "text-[#fff] hover:text-[#cec1b0] inline-block border-2 border-[#aa8453] p-2 rounded bg-[#aa8453]" 
-                      : item.label === "HOME"
-                        ? "text-[#aa8453] hover:text-white"
+                    cursor-pointer relative
+                    ${item.label === "HOME"
+                      ? "text-[#aa8453]"
+                      : isActive(item.path) 
+                        ? "text-[#aa8453]" 
                         : "text-white hover:text-[#aa8453]"
                     }
                   `}
                 >
                   {item.label}
+                  {isActive(item.path) && (
+                    <span className="absolute bottom-0 left-0 w-full h-0.5 bg-[#aa8453] -mb-1"></span>
+                  )}
                 </Link>
               </li>
             ))}
           </ul>
+          {/* <ul className="mt-4">
+            <li>
+              <Link 
+                to="/login"
+                className="text-[#fff] hover:text-[#cec1b0] cursor-pointer border-2 border-[#aa8453] rounded bg-[#aa8453] px-2"
+              >
+                LOGIN
+              </Link>
+            </li>
+          </ul> */}
         </div>
       </div>
     </>

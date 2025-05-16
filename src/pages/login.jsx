@@ -92,7 +92,7 @@ const Login = () => {
                   value={formData.name}
                   onChange={handleChange}
                   placeholder="Full Name"
-                  className={`pl-10 w-full py-3 bg-gray-800 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-[#aa8453] ${
+                  className={`pl-10 w-full py-3 bg-gray-800 text-white rounded-md ${
                     errors.name ? "border-red-500" : ""
                   }`}
                 />
@@ -112,7 +112,7 @@ const Login = () => {
                 value={formData.email}
                 onChange={handleChange}
                 placeholder="Email Address"
-                className={`pl-10 w-full py-3 bg-gray-800 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-[#aa8453] ${
+                className={`pl-10 w-full py-3 bg-gray-800 text-white rounded-md  ${
                   errors.email ? "border-red-500" : ""
                 }`}
               />
@@ -131,7 +131,7 @@ const Login = () => {
                 value={formData.password}
                 onChange={handleChange}
                 placeholder="Password"
-                className={`pl-10 w-full py-3 bg-gray-800 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-[#aa8453] ${
+                className={`pl-10 w-full py-3 bg-gray-800 text-white rounded-md ${
                   errors.password ? "border-red-500" : ""
                 }`}
               />
@@ -151,7 +151,7 @@ const Login = () => {
                   value={formData.confirmPassword}
                   onChange={handleChange}
                   placeholder="Confirm Password"
-                  className={`pl-10 w-full py-3 bg-gray-800 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-[#aa8453] ${
+                  className={`pl-10 w-full py-3 bg-gray-800 text-white rounded-md ${
                     errors.confirmPassword ? "border-red-500" : ""
                   }`}
                 />
@@ -176,7 +176,7 @@ const Login = () => {
           <div>
             <button
               type="submit"
-              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-white bg-[#aa8453] hover:bg-[#d5a464] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#aa8453] transition duration-300"
+              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-white bg-[#aa8453] hover:bg-[#d5a464]  transition duration-300"
             >
               {isLogin ? "Sign In" : "Register"}
             </button>

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "./components/footer";
 import './app.css';
@@ -19,6 +19,11 @@ function App() {
   const [reservationData, setReservationData] = useState(null);
   const [selectedRooms, setSelectedRooms] = useState(null);
 
+  const location = useLocation(); // Get the current route
+
+
+
+  const hideLayout = location.pathname === "/roombooking" || location.pathname === "/payment";
   
   const handleReservationSubmit = (formData) => {
     console.log("Reservation data received:", formData);
@@ -30,6 +35,7 @@ function App() {
   };
   return (
       <div className="app">
+        {!hideLayout && <Navbar />}
        <Navbar />
         <main className="min-h-screen">
           <Routes>
@@ -77,10 +83,11 @@ function App() {
               }
             />
             <Route path="/login" element={<Login />} />
-          <Route path="/contact" element={<Contact />}/>
+            <Route path="/contact" element={<Contact />}/>
           </Routes>
         </main>
-        <Footer />
+       
+        {!hideLayout && <Footer />} 
       </div>
    
   );
