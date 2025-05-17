@@ -1,16 +1,17 @@
 import React, { useState } from "react";
-import { CreditCard, Lock } from "lucide-react";
+import { CreditCard, Lock, ChevronRight } from "lucide-react";
 
 const Payment = ({ reservationDetails, selectedRooms }) => {
   const [paymentData, setPaymentData] = useState({
+    email: '',
     cardName: '',
     cardNumber: '',
     expiryDate: '',
-    cvv: '',
-    billingZip: ''
+    cvv: ''
   });
 
-  const [paymentMethod, setPaymentMethod] = useState('credit');
+  const [paymentMethod, setPaymentMethod] = useState('paystack');
+  const [isLoading, setIsLoading] = useState(false);
 
   const handlePaymentChange = (e) => {
     const { name, value } = e.target;
@@ -51,19 +52,121 @@ const Payment = ({ reservationDetails, selectedRooms }) => {
     return (sum % 10) === 0;
   };
 
-  const handleSubmitPayment = (e) => {
+  // const validateEmail = (email) => {
+  //   const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  //   return re.test(String(email).toLowerCase());
+  // };
+
+  const handleDirectPayment = (e) => {
     e.preventDefault();
     
     // Validation checks
     const isCardValid = validateCardNumber(paymentData.cardNumber);
+    const isEmailValid = validateEmail(paymentData.email);
     
     if (!isCardValid) {
       alert('Invalid card number. Please check and try again.');
       return;
     }
 
-    // Here would be the integration with a payment gateway
-    alert('Payment successful! Your booking has been confirmed.');
+    if (!isEmailValid) {
+      alert('Please enter a valid email address.');
+      return;
+    }
+
+    setIsLoading(true);
+
+    // Normally here you would send the card details to your backend
+    // which would make a charge request to Paystack
+    // For demo purposes, we'll simulate a successful payment after a delay
+    setTimeout(() => {
+      setIsLoading(false);
+      alert('Payment successful! Your booking has been confirmed.');
+    }, 2000);
+  };
+
+  const handlePaystackPayment = async (e) => {
+    e.preventDefault();
+    
+    if (!validateEmail(paymentData.email)) {
+      alert('Please enter a valid email address.');
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      // Make a request to your backend to initialize payment
+      const response = await fetch('/api/payment/initialize', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: paymentData.email,
+          amount: totalAmount * 100, // amount in kobo
+          metadata: {
+            guest_name: reservationDetails?.name || 'Guest',
+            room_selection: roomSummary,
+            nights: nights
+          }
+        }),
+      });
+      
+      const data = await response.json();
+      
+      if (data.status && data.data && data.data.authorization_url) {
+        // Redirect to Paystack checkout page
+        window.location.href = data.data.authorization_url;
+      } else {
+        throw new Error(data.message || 'Could not initialize payment');
+      }
+    } catch (error) {
+      console.error('Payment error:', error);
+      alert('Payment initialization failed. Please try again later.');
+      setIsLoading(false);
+    }
+  };
+
+  const handleFlutterwavePayment = async (e) => {
+    e.preventDefault();
+    
+    if (!validateEmail(paymentData.email)) {
+      alert('Please enter a valid email address.');
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      // Make a request to your backend to initialize payment
+      const response = await fetch('/api/payment/flutterwave', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: paymentData.email,
+          amount: totalAmount,
+          name: reservationDetails?.name || 'Guest',
+          description: roomSummary,
+          redirect_url: window.location.origin + '/payment/confirm'
+        }),
+      });
+      
+      const data = await response.json();
+      
+      if (data.status === 'success' && data.data && data.data.link) {
+        // Redirect to Flutterwave checkout page
+        window.location.href = data.data.link;
+      } else {
+        throw new Error(data.message || 'Could not initialize payment');
+      }
+    } catch (error) {
+      console.error('Payment error:', error);
+      alert('Payment initialization failed. Please try again later.');
+      setIsLoading(false);
+    }
   };
 
   // Format currency
@@ -123,18 +226,55 @@ const Payment = ({ reservationDetails, selectedRooms }) => {
 
         <div className="flex space-x-4 mb-6">
           <label className="flex items-center">
-            <input className="mr-2" type="radio" name="paymentMethod" value="credit" checked={paymentMethod === 'credit'}
-              onChange={() => setPaymentMethod('credit')}/>
-            Credit Card
+            <input 
+              className="mr-2" 
+              type="radio" 
+              name="paymentMethod" 
+              value="paystack" 
+              checked={paymentMethod === 'paystack'}
+              onChange={() => setPaymentMethod('paystack')}
+            />
+            Paystack
           </label>
           <label className="flex items-center">
-            <input className="mr-2" type="radio" name="paymentMethod" value="paypal"  onChange={() => setPaymentMethod('paypal')}/>
-            PayPal
+            <input 
+              className="mr-2" 
+              type="radio" 
+              name="paymentMethod" 
+              value="flutterwave"
+              checked={paymentMethod === 'flutterwave'}
+              onChange={() => setPaymentMethod('flutterwave')}
+            />
+            Flutterwave
+          </label>
+          <label className="flex items-center">
+            <input 
+              className="mr-2" 
+              type="radio" 
+              name="paymentMethod" 
+              value="direct"
+              checked={paymentMethod === 'direct'}
+              onChange={() => setPaymentMethod('direct')}
+            />
+            Direct Card
           </label>
         </div>
         
-        {paymentMethod === 'credit' ? (
-          <form className="space-y-4" onSubmit={handleSubmitPayment}>
+        {paymentMethod === 'direct' ? (
+          <form className="space-y-4" onSubmit={handleDirectPayment}>
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email Address</label>
+              <input 
+                type="email" 
+                id="email"
+                name="email"
+                value={paymentData.email}
+                onChange={handlePaymentChange}
+                required 
+                placeholder="youremail@example.com" 
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3"
+              />
+            </div>
             <div>
               <label htmlFor="cardName" className="block text-sm font-medium text-gray-700">Name on Card</label>
               <input 
@@ -206,41 +346,91 @@ const Payment = ({ reservationDetails, selectedRooms }) => {
                 />
               </div>
             </div>
-            <div>
-              <label htmlFor="billingZip" className="block text-sm font-medium text-gray-700">Billing Zip Code</label>
-              <input 
-                type="text" 
-                id="billingZip"
-                name="billingZip"
-                value={paymentData.billingZip}
-                onChange={(e) => {
-                  const value = e.target.value.replace(/\D/g, '').slice(0,5);
-                  setPaymentData(prev => ({...prev, billingZip: value}));
-                }}
-                maxLength="5"
-                required 
-                placeholder="12345" 
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3"
-              />
-            </div>
             
             <button 
               type="submit" 
               className="w-full flex justify-center items-center bg-[#aa8453] hover:bg-[#9a7648] text-white font-medium py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#aa8453] mt-6"
+              disabled={isLoading}
             >
-              <Lock className="mr-2 h-4 w-4" /> Pay 
+              {isLoading ? (
+                <span>Processing...</span>
+              ) : (
+                <>
+                  <Lock className="mr-2 h-4 w-4" /> Pay {formatCurrency(totalAmount)}
+                </>
+              )}
             </button>
           </form>
+        ) : paymentMethod === 'paystack' ? (
+          <form className="space-y-4" onSubmit={handlePaystackPayment}>
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email Address</label>
+              <input 
+                type="email" 
+                id="email"
+                name="email"
+                value={paymentData.email}
+                onChange={handlePaymentChange}
+                required 
+                placeholder="youremail@example.com" 
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3"
+              />
+            </div>
+            
+            <div className="mt-6">
+              <p className="text-sm text-gray-600 mb-4">
+                Click the button below to pay securely with Paystack. You will be redirected to Paystack's secure payment page.
+              </p>
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-full flex justify-center items-center bg-[#0ab259] hover:bg-[#08a050] text-white font-medium py-3 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0ab259]"
+              >
+                {isLoading ? (
+                  <span>Processing...</span>
+                ) : (
+                  <>
+                    Pay with Paystack {formatCurrency(totalAmount)} <ChevronRight className="ml-2 h-4 w-4" />
+                  </>
+                )}
+              </button>
+            </div>
+          </form>
         ) : (
-          <div className="mt-6 text-center">
-            <p className="mb-4">You will be redirected to PayPal to complete your payment of {formatCurrency(totalAmount)}.</p>
-            <button
-              onClick={() => alert('Redirecting to PayPal...')}
-              className="flex justify-center items-center mx-auto bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            >
-              Continue to PayPal
-            </button>
-          </div>
+          <form className="space-y-4" onSubmit={handleFlutterwavePayment}>
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email Address</label>
+              <input 
+                type="email" 
+                id="email"
+                name="email"
+                value={paymentData.email}
+                onChange={handlePaymentChange}
+                required 
+                placeholder="youremail@example.com" 
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3"
+              />
+            </div>
+            
+            <div className="mt-6">
+              <p className="text-sm text-gray-600 mb-4">
+                Click the button below to pay securely with Flutterwave. You will be redirected to Flutterwave's secure payment page.
+              </p>
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-full flex justify-center items-center bg-[#f5a623] hover:bg-[#e09612] text-white font-medium py-3 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#f5a623]"
+              >
+                {isLoading ? (
+                  <span>Processing...</span>
+                ) : (
+                  <>
+                    Pay with Flutterwave {formatCurrency(totalAmount)} <ChevronRight className="ml-2 h-4 w-4" />
+                  </>
+                )}
+              </button>
+            </div>
+          </form>
         )}
         
         <div className="mt-6 flex items-center justify-center text-xs text-gray-500">
