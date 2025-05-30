@@ -1,12 +1,14 @@
 import React from "react";
 import { Bed, Bath, Wifi } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const Rooms = () => {
+  const navigate = useNavigate();
   const roomData = [
     {
       id: 1,
       image: "https://duruthemes.com/demo/html/cappa/demo1-dark/img/rooms/1.jpg",
-      price: "NGN145,000/Night",
+      price: "NGN1000/Night",
       name: "Double Deluxe",
       bed: 3,
       bath: 2,
@@ -16,7 +18,7 @@ const Rooms = () => {
     {
       id: 2,
       image: "https://duruthemes.com/demo/html/cappa/demo1-dark/img/rooms/2.jpg",
-      price: "NGN150,000/Night",
+      price: "NGN1200/Night",
       name: "Royal Standard",
       bed: 3,
       bath: 2,
@@ -26,7 +28,7 @@ const Rooms = () => {
     {
       id: 3,
       image: "https://duruthemes.com/demo/html/cappa/demo1-dark/img/rooms/3.jpg",
-      price: "NGN165,000/Night",
+      price: "NGN1400/Night",
       name: "Royal Executive",
       bed: 3,
       bath: 2,
@@ -36,7 +38,7 @@ const Rooms = () => {
     {
       id: 4,
       image: "https://duruthemes.com/demo/html/cappa/demo1-dark/img/rooms/4.jpg",
-      price: "NGN185,000/Night",
+      price: "NGN1500/Night",
       name: "Executive Suite",
       bed: 3,
       bath: 2,
@@ -46,7 +48,7 @@ const Rooms = () => {
     {
       id: 5,
       image: "https://duruthemes.com/demo/html/cappa/demo1-dark/img/rooms/2.jpg",
-      price: "NGN150,000/Night",
+      price: "NGN1700/Night",
       name: "Luxury King Bed",
       bed: 3,
       bath: 2,
@@ -56,7 +58,7 @@ const Rooms = () => {
     {
       id: 6,
       image: "https://duruthemes.com/demo/html/cappa/demo1-dark/img/rooms/7.jpg",
-      price: "NGN200,000/Night",
+      price: "NGN2000/Night",
       name: "Premium Suite",
       bed: 3,
       bath: 2,
@@ -128,7 +130,11 @@ const Rooms = () => {
                   <button className="bg-[#aa8453] hover:bg-[#9b7d55] text-white text-sm sm:text-base font-medium py-2 px-4 sm:px-6 rounded transition duration-300 flex items-center justify-center">
                     VIEW DETAIL
                   </button>
-                  <button className="bg-[#aa8453] hover:bg-[#9b7d55] text-white text-sm sm:text-base font-medium py-2 px-4 sm:px-6 rounded transition duration-300 flex items-center justify-center">
+                 <button
+                    onClick={() => navigate("/reservation")}
+                    className="bg-[#aa8453] hover:bg-[#9b7d55] text-white text-sm sm:text-base font-medium py-2 px-4 sm:px-6 rounded transition duration-300 flex items-center justify-center"
+                    type="button"
+                  >
                     BOOK NOW
                   </button>
                 </div>

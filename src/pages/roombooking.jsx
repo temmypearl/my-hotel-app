@@ -19,13 +19,13 @@ const RoomBooking = ({ formData, onContinue }) => {
     }));
   };
 
-  // Room data with prices as numbers for calculation
+  // Room data with updated prices
   const roomData = [
     {
       id: 'junior',
       name: 'Double Deluxe',
-      price: 145000, // Price as a number for calculations
-      displayPrice: 'NGN145,000', // Formatted price for display
+      price: 1000,
+      displayPrice: 'NGN1,000',
       amenities: ['Breakfast', 'WiFi', 'Gym', 'Satellite TV', 'Restaurant on-site'],
       image: "https://duruthemes.com/demo/html/cappa/demo1-dark/img/rooms/1.jpg",
       date: formData?.checkIn ? new Date(formData.checkIn).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '03 Apr, 2025'
@@ -33,8 +33,8 @@ const RoomBooking = ({ formData, onContinue }) => {
     {
       id: 'double',
       name: 'Royal Standard',
-      price: 150000,
-      displayPrice: 'NGN150,000',
+      price: 1200,
+      displayPrice: 'NGN1,200',
       amenities: ['Breakfast', 'WiFi', 'Gym', 'Satellite TV', 'Restaurant on-site'],
       image: "https://duruthemes.com/demo/html/cappa/demo1-dark/img/rooms/2.jpg",
       date: formData?.checkIn ? new Date(formData.checkIn).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '03 Apr, 2025'
@@ -42,8 +42,8 @@ const RoomBooking = ({ formData, onContinue }) => {
     {
       id: 'deluxe',
       name: 'Royal Executive',
-      price: 165000,
-      displayPrice: 'NGN165,000',
+      price: 1400,
+      displayPrice: 'NGN1,400',
       amenities: ['Breakfast', 'WiFi', 'Gym', 'Satellite TV', 'Restaurant on-site'],
       image: "https://duruthemes.com/demo/html/cappa/demo1-dark/img/rooms/3.jpg",
       date: formData?.checkIn ? new Date(formData.checkIn).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '03 Apr, 2025'
@@ -51,8 +51,8 @@ const RoomBooking = ({ formData, onContinue }) => {
     {
       id: 'family',
       name: 'Executive Suite',
-      price: 185000,
-      displayPrice: 'NGN185,000',
+      price: 1500,
+      displayPrice: 'NGN1,500',
       amenities: ['Breakfast', 'WiFi', 'Gym', 'Satellite TV', 'Restaurant on-site'],
       image: "https://duruthemes.com/demo/html/cappa/demo1-dark/img/rooms/4.jpg",
       date: formData?.checkIn ? new Date(formData.checkIn).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '03 Apr, 2025'
@@ -60,8 +60,8 @@ const RoomBooking = ({ formData, onContinue }) => {
     {
       id: 'superior',
       name: 'Luxury King',
-      price: 200000,
-      displayPrice: 'NGN200,000',
+      price: 1700,
+      displayPrice: 'NGN1,700',
       amenities: ['Breakfast', 'WiFi', 'Gym', 'Satellite TV', 'Restaurant on-site'],
       image: "https://duruthemes.com/demo/html/cappa/demo1-dark/img/rooms/7.jpg",
       date: formData?.checkIn ? new Date(formData.checkIn).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '03 Apr, 2025'
@@ -69,8 +69,8 @@ const RoomBooking = ({ formData, onContinue }) => {
     {
       id: 'superior',
       name: 'Premium Suite',
-      price: 200000,
-      displayPrice: 'NGN200,000',
+      price: 2000,
+      displayPrice: 'NGN2,000',
       amenities: ['Breakfast', 'WiFi', 'Gym', 'Satellite TV', 'Restaurant on-site'],
       image: "https://duruthemes.com/demo/html/cappa/demo1-dark/img/rooms/7.jpg",
       date: formData?.checkIn ? new Date(formData.checkIn).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '03 Apr, 2025'
@@ -248,25 +248,19 @@ const RoomBooking = ({ formData, onContinue }) => {
                 )
               ))}
             </div>
-            
-            {/* Duration */}
-            <div className="flex justify-between border-t border-gray-700 pt-4 mb-2">
-              <span>Duration:</span>
-              <span>{nights} {nights === 1 ? 'Night' : 'Nights'}</span>
-            </div>
-            
-            {/* Total */}
-            <div className="flex justify-between font-bold text-xl border-t border-gray-700 pt-4">
-              <span>Total Amount:</span>
-              <span className="text-[#aa8453]">{formatCurrency(totalAmount)}</span>
+
+            <div className="flex justify-between font-semibold text-lg border-t border-gray-700 pt-4">
+              <span>Total for {nights} {nights === 1 ? 'night' : 'nights'}</span>
+              <span>{formatCurrency(totalAmount)}</span>
             </div>
           </div>
         )}
-        
-        <div className="mt-8 text-center">
-          <button 
+
+        {/* Continue booking button */}
+        <div className="mt-10 flex justify-center">
+          <button
             onClick={handleContinueBooking}
-            className="bg-[#aa8453] text-white px-8 py-3 rounded-md font-medium hover:bg-[#6a5438] transition-colors duration-200"
+            className="bg-[#aa8453] text-black font-bold px-8 py-4 rounded hover:bg-[#6a5438] transition-colors duration-200"
             type="button"
           >
             Continue Booking

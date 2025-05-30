@@ -36,8 +36,6 @@ const Navbar = () => {
     };     
   }, []);
 
-  // Check if the current path matches the nav item path
-  // Don't apply active effect to home page
   const isActive = (path) => {
     if (path === "/") {
       return false; // Never show underline for home
@@ -76,7 +74,7 @@ const Navbar = () => {
             ))}
           </ul>
 
-          {/* <ul>
+          <ul>
             <li className="hidden md:flex">
               <Link 
                 to="/login"
@@ -85,7 +83,7 @@ const Navbar = () => {
                 LOGIN
               </Link>
             </li>
-          </ul> */}
+          </ul>
         </div>
 
         {/* Mobile Screen Toggle */}
@@ -128,16 +126,17 @@ const Navbar = () => {
               </li>
             ))}
           </ul>
-          {/* <ul className="mt-4">
+          <ul className="mt-6 px-6">
             <li>
               <Link 
                 to="/login"
-                className="text-[#fff] hover:text-[#cec1b0] cursor-pointer border-2 border-[#aa8453] rounded bg-[#aa8453] px-2"
+                onClick={closeMobileMenu}
+                className="block w-full text-center py-3 bg-[#aa8453] text-white font-semibold rounded-lg border-2 border-[#aa8453] hover:bg-[#d5a464] hover:border-[#d5a464] transition"
               >
                 LOGIN
               </Link>
             </li>
-          </ul> */}
+          </ul>
         </div>
       </div>
     </>
