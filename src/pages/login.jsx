@@ -2,9 +2,11 @@ import React, { useState } from "react";
 import { Mail, Lock, User, Phone, Eye, EyeOff } from "lucide-react";
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const Login = ({ onRegistrationSuccess }) => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -113,40 +115,72 @@ const Login = ({ onRegistrationSuccess }) => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (validateForm()) {
-      setLoading(true);
-      setServerError("");
-      try {
-        if (isLogin) {
-          const response = await axios.post('http://localhost:4005/api/v1/auth/users/login', {
-            email: formData.email,
-            password: formData.password,
-          });
-          console.log('Login successful:', response.data);
-          navigate('/');
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  if (validateForm()) {
+    setLoading(true);
+    setServerError("");
+    try {
+      if (isLogin) {
+        const response = await axios.post('http://localhost:4000/api/v1/auth/users/login', {
+          email: formData.email,
+          password: formData.password,
+        });
+        console.log('Login successful:', response.data);
+
+        // Extract user data and tokens from response
+        const userData = {
+          id: response.data.user?.id || 1,
+          firstName: response.data.user?.firstName || formData.email.split('@')[0],
+          lastName: response.data.user?.lastName || '',
+          email: response.data.user?.email || formData.email,
+          phoneNumber: response.data.user?.phoneNumber || ''
+        };
+
+        // Extract accessToken and refreshToken explicitly
+        const accessToken = response.data.token?.accessToken || response.data.accessToken || 'mock-access-token';
+        const refreshToken = response.data.token?.refreshToken || 'mock-refresh-token'; // Assuming refreshToken is always nested under 'token'
+
+        // --- Store tokens in user cache (localStorage/sessionStorage) ---
+        sessionStorage.setItem('accessToken', accessToken);
+        localStorage.setItem('refreshToken', refreshToken);
+        // ----------------------------------------------------------------
+
+        // Use the auth context login function (if it handles user data only)
+        login(userData, accessToken); // Pass accessToken if your context needs it
+
+        // Check if there's a redirect path stored
+        const redirectPath = sessionStorage.getItem('redirectAfterLogin');
+        if (redirectPath) {
+          // Clear the stored redirect path
+          sessionStorage.removeItem('redirectAfterLogin');
+          // Redirect to the intended page
+          navigate(redirectPath);
         } else {
-          const response = await axios.post('http://localhost:4005/api/v1/auth/users/signin', {
-            firstName: formData.firstName,
-            lastName: formData.lastName,
-            email: formData.email,
-            password: formData.password,
-            confirmPassword: formData.confirmPassword,
-            phoneNumber: formData.phoneNumber,
-          });
-          console.log('Registration successful, redirecting to OTP page');
-          onRegistrationSuccess(formData.email);
+          // Default redirect to home
+          navigate('/');
         }
-      } catch (error) {
-        console.error(isLogin ? 'Login failed:' : 'Registration failed:', error.response?.data || error.message);
-        const errorMessage = error.response?.data?.message || error.response?.data?.error || error.message || 'An error occurred';
-        setServerError(errorMessage);
-      } finally {
-        setLoading(false);
+      } else {
+        const response = await axios.post('http://localhost:4000/api/v1/auth/users/signin', {
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          password: formData.password,
+          confirmPassword: formData.confirmPassword,
+          phoneNumber: formData.phoneNumber,
+        });
+        console.log('Registration successful, redirecting to OTP page');
+        onRegistrationSuccess(formData.email);
       }
+    } catch (error) {
+      console.error(isLogin ? 'Login failed:' : 'Registration failed:', error.response?.data || error.message);
+      const errorMessage = error.response?.data?.message || error.response?.data?.error || error.message || 'An error occurred';
+      setServerError(errorMessage);
+    } finally {
+      setLoading(false);
     }
-  };
+  }
+};
 
   const toggleMode = () => {
     setIsLogin(!isLogin);
@@ -168,8 +202,8 @@ const Login = ({ onRegistrationSuccess }) => {
   const toggleConfirmPasswordVisibility = () => setShowConfirmPassword(!showConfirmPassword);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#1b1b1b] py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full bg-black p-8 rounded-lg shadow-xl">
+    <div className="min-h-screen flex items-center justify-center bg-[#1b1b1b] py-10 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full bg-black p-8 rounded-lg shadow-xl mt-14">
         <div className="text-center mb-10">
           <h1 className="text-3xl font-bold text-[#aa8453] mb-2 font-serif">
             {isLogin ? "Welcome Back" : "Create Account"}
@@ -179,6 +213,14 @@ const Login = ({ onRegistrationSuccess }) => {
               ? "Sign in to access your account"
               : "Join us for exclusive benefits"}
           </p>
+          {/* Show redirect message if coming from reservation */}
+          {sessionStorage.getItem('redirectAfterLogin') === '/reservation' && (
+            <div className="mt-4 p-3 bg-[#aa8453] bg-opacity-20 border border-[#aa8453] rounded-md">
+              <p className="text-[#aa8453] text-sm">
+                Please log in to make a reservation
+              </p>
+            </div>
+          )}
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">

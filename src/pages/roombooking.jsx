@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Wifi, Utensils, Tv, Dumbbell, Clock } from 'lucide-react';
+import axios from 'axios'; // Make sure axios is imported
 
 const RoomBooking = ({ formData, onContinue }) => {
   const navigate = useNavigate();
@@ -9,8 +10,12 @@ const RoomBooking = ({ formData, onContinue }) => {
     double: 0,
     deluxe: 0,
     family: 0,
-    superior: 0
+    superior: 0,
+    premium: 0
   });
+
+  const [isLoading, setIsLoading] = useState(false); // State for loading status
+  const [error, setError] = useState(null); // State for displaying errors
 
   const updateRoomCount = (roomType, increment) => {
     setRoomCounts(prev => ({
@@ -19,7 +24,7 @@ const RoomBooking = ({ formData, onContinue }) => {
     }));
   };
 
-  // Room data with updated prices
+  // Room data with updated prices (assuming this is correct and fetched/defined)
   const roomData = [
     {
       id: 'junior',
@@ -32,201 +37,249 @@ const RoomBooking = ({ formData, onContinue }) => {
     },
     {
       id: 'double',
-      name: 'Royal Standard',
-      price: 1200,
-      displayPrice: 'NGN1,200',
-      amenities: ['Breakfast', 'WiFi', 'Gym', 'Satellite TV', 'Restaurant on-site'],
+      name: 'Double Room',
+      price: 1500,
+      displayPrice: 'NGN1,500',
+      amenities: ['Breakfast', 'WiFi', 'Mini-bar', '24-hour room service'],
       image: "https://duruthemes.com/demo/html/cappa/demo1-dark/img/rooms/2.jpg",
       date: formData?.checkIn ? new Date(formData.checkIn).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '03 Apr, 2025'
     },
     {
       id: 'deluxe',
-      name: 'Royal Executive',
-      price: 1400,
-      displayPrice: 'NGN1,400',
-      amenities: ['Breakfast', 'WiFi', 'Gym', 'Satellite TV', 'Restaurant on-site'],
+      name: 'Deluxe Room',
+      price: 2000,
+      displayPrice: 'NGN2,000',
+      amenities: ['Breakfast', 'WiFi', 'Bathtub', 'City View', 'Executive Lounge Access'],
       image: "https://duruthemes.com/demo/html/cappa/demo1-dark/img/rooms/3.jpg",
       date: formData?.checkIn ? new Date(formData.checkIn).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '03 Apr, 2025'
     },
     {
       id: 'family',
-      name: 'Executive Suite',
-      price: 1500,
-      displayPrice: 'NGN1,500',
-      amenities: ['Breakfast', 'WiFi', 'Gym', 'Satellite TV', 'Restaurant on-site'],
+      name: 'Family Suite',
+      price: 2500,
+      displayPrice: 'NGN2,500',
+      amenities: ['Breakfast', 'WiFi', 'Kitchenette', 'Separate Living Area', 'Kids Club Access'],
       image: "https://duruthemes.com/demo/html/cappa/demo1-dark/img/rooms/4.jpg",
       date: formData?.checkIn ? new Date(formData.checkIn).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '03 Apr, 2025'
     },
     {
       id: 'superior',
-      name: 'Luxury King',
-      price: 1700,
-      displayPrice: 'NGN1,700',
-      amenities: ['Breakfast', 'WiFi', 'Gym', 'Satellite TV', 'Restaurant on-site'],
-      image: "https://duruthemes.com/demo/html/cappa/demo1-dark/img/rooms/7.jpg",
+      name: 'Superior Suite',
+      price: 3000,
+      displayPrice: 'NGN3,000',
+      amenities: ['Breakfast', 'WiFi', 'Private Balcony', 'Sea View', 'Butler Service'],
+      image: "https://duruthemes.com/demo/html/cappa/demo1-dark/img/rooms/5.jpg",
       date: formData?.checkIn ? new Date(formData.checkIn).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '03 Apr, 2025'
     },
     {
-      id: 'superior',
-      name: 'Premium Suite',
-      price: 2000,
-      displayPrice: 'NGN2,000',
-      amenities: ['Breakfast', 'WiFi', 'Gym', 'Satellite TV', 'Restaurant on-site'],
-      image: "https://duruthemes.com/demo/html/cappa/demo1-dark/img/rooms/7.jpg",
+      id: 'premium',
+      name: 'Premium Penthouse',
+      price: 5000,
+      displayPrice: 'NGN5,000',
+      amenities: ['Breakfast', 'WiFi', 'Private Pool', 'Personal Chef', '24/7 Concierge'],
+      image: "https://duruthemes.com/demo/html/cappa/demo1-dark/img/rooms/6.jpg",
       date: formData?.checkIn ? new Date(formData.checkIn).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '03 Apr, 2025'
     }
   ];
 
-  const getAmenityIcon = (amenity) => {
-    if (amenity.includes('WiFi')) return <Wifi size={16} />;
-    if (amenity.includes('Restaurant')) return <Utensils size={16} />;
-    if (amenity.includes('TV')) return <Tv size={16} />;
-    if (amenity.includes('Gym')) return <Dumbbell size={16} />;
-    return null;
-  };
-
-  // Calculate number of nights
-  const calculateNights = () => {
-    if (formData?.checkIn && formData?.checkOut) {
-      const checkInDate = new Date(formData.checkIn);
-      const checkOutDate = new Date(formData.checkOut);
-      return Math.ceil((checkOutDate - checkInDate) / (1000 * 60 * 60 * 24));
-    }
-    return 1; // Default to 1 night if dates aren't specified
-  };
-
-  const nights = calculateNights();
-
-  // Calculate total amount for all selected rooms
   const calculateTotal = () => {
     let total = 0;
-    
-    // Add up the cost of each room type
     roomData.forEach(room => {
-      const count = roomCounts[room.id];
-      if (count > 0) {
-        total += room.price * count;
-      }
+      total += room.price * roomCounts[room.id];
     });
-    
-    // Multiply by number of nights
-    total *= nights;
-    
     return total;
   };
 
   const totalAmount = calculateTotal();
 
-  // Format currency
+  // Calculate number of nights
+  const checkInDate = formData?.checkIn ? new Date(formData.checkIn) : null;
+  const checkOutDate = formData?.checkOut ? new Date(formData.checkOut) : null;
+  const nights = (checkInDate && checkOutDate)
+    ? Math.ceil((checkOutDate.getTime() - checkInDate.getTime()) / (1000 * 3600 * 24))
+    : 0;
+
+
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('en-NG', {
       style: 'currency',
       currency: 'NGN',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
+      minimumFractionDigits: 2,
     }).format(amount);
   };
 
-  const handleContinueBooking = () => {
-    // Check if at least one room is selected
-    const totalRooms = Object.values(roomCounts).reduce((sum, count) => sum + count, 0);
-    if (totalRooms === 0) {
-      alert('Please select at least one room to continue.');
-      return;
-    }
-    
-    // Pass selected rooms and total amount to parent component via onContinue prop
-    onContinue({ roomCounts, totalAmount, nights });
-    
-    // Navigate to payment page after room selection
-    navigate('/payment');
+const handleContinueBooking = async () => {
+  // Input validation checks
+  setError(null); // Clear previous errors
+  if (!formData || !formData.checkIn || !formData.checkOut) {
+    setError("Please go back and fill in reservation details first.");
+    navigate('/reservation');
+    return;
+  }
+
+  if (totalAmount <= 0) {
+    setError("Please select at least one room to continue.");
+    return;
+  }
+
+  setIsLoading(true); // Set loading state to true
+
+  const selectedRoomDetails = roomData
+    .filter(room => roomCounts[room.id] > 0)
+    .map(room => ({
+      roomType: room.name, // Use the display name
+      roomPrice: room.price,
+      numberOfRooms: roomCounts[room.id]
+    }));
+
+  const reservationDetails = {
+    checkInDate: formData.checkIn,
+    checkOutDate: formData.checkOut,
+    noOfAdult: parseInt(formData.adults),
+    noOfChildren: parseInt(formData.children),
+    roomAllocations: selectedRoomDetails, // Using the mapped selected room details
+    totalPrice: totalAmount,
+    specialRequest: formData.notes,
+    // Add user details from formData with corrected keys
+    name: formData.name,
+    emailAddress: formData.email, // Using emailAddress as per your latest
+    phoneNumber: formData.phone,   // Using phoneNumber as per your latest
   };
 
-  // Display reservation summary
-  const checkInDate = formData?.checkIn ? new Date(formData.checkIn).toLocaleDateString() : 'Not specified';
-  const checkOutDate = formData?.checkOut ? new Date(formData.checkOut).toLocaleDateString() : 'Not specified';
+  // --- Retrieve the access token from sessionStorage ---
+  const accessToken = sessionStorage.getItem('accessToken');
+
+  // --- Check if token exists, otherwise handle it (e.g., redirect to login) ---
+  if (!accessToken) {
+    setError("You are not logged in. Please log in to make a reservation.");
+    // Optionally, store the current path to redirect after successful login
+    sessionStorage.setItem('redirectAfterLogin', window.location.pathname);
+    navigate('/login'); // Assuming you have a login route
+    setIsLoading(false);
+    return;
+  }
+
+  try {
+    const res = await axios.post(
+      'http://localhost:4000/api/v1/reservation',
+      reservationDetails,
+      {
+        // --- Add the Authorization header with the access token ---
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+
+    console.log("Full Reservation Response from Backend:", res.data); // Log the full response for verification
+
+    // --- Save the whole reservation response data to localStorage ---
+    // Make sure to stringify it because localStorage stores strings
+    
+    // --- Now perform the normal checking for reservation ID ---
+    // IMPORTANT: Verify the exact path for the reservation ID from your backend response.
+    // Based on your console.log line: `res.data.reservationData.id`
+    if (res.data.reservationData.id) {
+      const reservationId = res.data.reservationData.id;
+      console.log("Reservation registered successfully with ID:", reservationId);
+      localStorage.setItem('lastReservationResponse', JSON.stringify(res.data));
+      navigate(`/payment`); // Navigate to confirmation page
+    } else {
+      // If API call is successful but reservation ID is missing or malformed
+      setError('Reservation successful, but reservation ID could not be retrieved. Please check your reservations history.');
+      alert('Reservation successful, but reservation ID could not be retrieved. Please check your reservations history.');
+    }
+  } catch (err) {
+    console.error('Error during reservation:', err);
+    if (err.response) {
+      // Handle 401 Unauthorized specifically for token issues
+      if (err.response.status === 401) {
+        setError('Your session has expired or is invalid. Please log in again.');
+        alert('Your session has expired or is invalid. Please log in again.');
+        sessionStorage.removeItem('accessToken'); // Clear invalid token
+        localStorage.removeItem('refreshToken'); // Clear refresh token as well if appropriate
+        sessionStorage.setItem('redirectAfterLogin', window.location.pathname); // Store current path
+        navigate('/login'); // Redirect to login
+      } else {
+        // Log the specific server error message for better debugging
+        console.error("Server Error Details:", err.response.data);
+        setError(`Reservation failed: ${err.response.data.message || 'Server error'}`);
+        alert(`Reservation failed: ${err.response.data.message || 'Server error'}`);
+      }
+    } else if (err.request) {
+      // The request was made but no response was received (e.g., network down)
+      setError('Network error: No response from server. Please check your internet connection or try again later.');
+      alert('Network error: Could not connect to the server. Please try again.');
+    } else {
+      // Something happened in setting up the request that triggered an Error
+      setError(`An unexpected error occurred: ${err.message}`);
+      alert(`An unexpected error occurred: ${err.message}`);
+    }
+  } finally {
+    setIsLoading(false); // Always set loading to false after attempt
+  }
+};
+
 
   return (
-    <div className="bg-[#1b1b1b] min-h-screen p-6">
+    <div className="bg-black text-white min-h-screen p-8">
       <div className="max-w-6xl mx-auto">
-        <div className="bg-black p-6 rounded-lg mb-8">
-          <h2 className="text-2xl font-bold text-[#aa8453] mb-4">Reservation Summary</h2>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-white">
-            <div>
-              <p className="text-sm text-gray-400">Guest</p>
-              <p className="font-medium">{formData?.name || 'Guest'}</p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-400">Check-in</p>
-              <p className="font-medium">{checkInDate}</p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-400">Check-out</p>
-              <p className="font-medium">{checkOutDate}</p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-400">Guests</p>
-              <p className="font-medium">{formData?.adults || '1'} Adults, {formData?.children || '0'} Children</p>
-            </div>
-          </div>
-          <div className="mt-4 text-white">
-            <p className="text-sm text-gray-400">Stay Duration</p>
-            <p className="font-medium">{nights} {nights === 1 ? 'Night' : 'Nights'}</p>
-          </div>
-        </div>
+        <h2 className="text-4xl font-bold text-[#aa8453] text-center mb-10">Select Your Room(s)</h2>
 
-        <h1 className="text-3xl font-bold text-center text-white mb-10">Choose Your Preferred Rooms</h1>
-        <div className="space-y-8">
+        {error && (
+            <div className="bg-red-800 text-white p-3 rounded-md mb-6 text-center">
+                <p>{error}</p>
+            </div>
+        )}
+
+        {/* Display reservation details from formData */}
+        {formData && (
+          <div className="bg-gray-800 p-6 rounded-lg shadow-xl mb-10 text-center">
+            <h3 className="text-2xl font-semibold text-[#aa8453] mb-4">Your Reservation Details</h3>
+            <p className="text-lg">Check-in: <span className="font-medium">{new Date(formData.checkIn).toLocaleDateString()}</span></p>
+            <p className="text-lg">Check-out: <span className="font-medium">{new Date(formData.checkOut).toLocaleDateString()}</span></p>
+            <p className="text-lg">Adults: <span className="font-medium">{formData.adults}</span>, Children: <span className="font-medium">{formData.children}</span></p>
+            <p className="text-lg">Nights: <span className="font-medium">{nights}</span></p>
+            {formData.notes && <p className="text-lg">Special Request: <span className="font-medium">{formData.notes}</span></p>}
+          </div>
+        )}
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {roomData.map((room) => (
-            <div key={room.id} className="grid grid-cols-1 md:grid-cols-12 gap-6 border-b border-gray-700 pb-8">
-              <div className="md:col-span-4">
-                <img src={room.image} alt={room.name} className="w-full h-48 object-cover rounded-md" />
-              </div>
-              <div className="md:col-span-5 flex flex-col justify-between text-white">
-                <h2 className="text-xl font-semibold text-[#aa8453] mb-2">{room.name}</h2>
-                <div className="bg-black p-2 rounded-md mb-4">
-                  {room.amenities.map((amenity, index) => (
-                    <span key={index} className="inline-flex items-center mr-4 mb-2 text-gray-300">
-                      <span className="mr-1 text-[#aa8453]">{getAmenityIcon(amenity)}</span>
-                      <span className="text-sm">{amenity}</span>
+            <div key={room.id} className="bg-gray-900 rounded-lg shadow-lg overflow-hidden flex flex-col">
+              <img src={room.image} alt={room.name} className="w-full h-48 object-cover" />
+              <div className="p-6 flex flex-col flex-grow">
+                <h3 className="text-2xl font-bold text-[#aa8453] mb-2">{room.name}</h3>
+                <p className="text-xl text-gray-300 mb-4">{formatCurrency(room.price)} <span className="text-sm text-gray-500">/ night</span></p>
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {room.amenities.map((amenity, idx) => (
+                    <span key={idx} className="bg-gray-700 text-gray-300 text-xs px-3 py-1 rounded-full flex items-center">
+                      {amenity === 'WiFi' && <Wifi className="h-3 w-3 mr-1" />}
+                      {amenity === 'Breakfast' && <Utensils className="h-3 w-3 mr-1" />}
+                      {amenity === 'Satellite TV' && <Tv className="h-3 w-3 mr-1" />}
+                      {amenity === 'Gym' && <Dumbbell className="h-3 w-3 mr-1" />}
+                      {amenity === '24-hour room service' && <Clock className="h-3 w-3 mr-1" />}
+                      {amenity}
                     </span>
                   ))}
                 </div>
-                <div>
-                  <p className="text-2xl font-bold text-[#aa8453]">
-                    {room.displayPrice} <br/>
-                    <span className="text-sm font-normal text-gray-400 ml-1">per night</span>
-                  </p>
-                  <div className="flex items-start mt-2 text-xs text-gray-400">
-                    <Clock size={16} className="mr-1 mt-0.5 flex-shrink-0 text-[#aa8453]" />
-                    <p>Cancellation Policy: This booking may be cancelled for free before 12:00pm hotel local time on {room.date}</p>
+                <div className="mt-auto flex justify-between items-center pt-4 border-t border-gray-700">
+                  <span className="text-lg font-semibold">Rooms: {roomCounts[room.id]}</span>
+                  <div className="flex items-center space-x-2">
+                    <button
+                      onClick={() => updateRoomCount(room.id, -1)}
+                      className="bg-gray-700 text-white p-2 rounded-full hover:bg-gray-600 transition-colors duration-200"
+                    >
+                      -
+                    </button>
+                    <button
+                      onClick={() => updateRoomCount(room.id, 1)}
+                      className="bg-[#aa8453] text-black p-2 rounded-full hover:bg-[#d5a464] transition-colors duration-200"
+                    >
+                      +
+                    </button>
                   </div>
                 </div>
-              </div>
-              <div className="md:col-span-3 flex flex-col items-center justify-center">
-                <span className="text-lg font-medium text-[#aa8453] mb-2">Rooms</span>
-                <div className="flex items-center border border-gray-700 rounded-md overflow-hidden">
-                  <button 
-                    onClick={() => updateRoomCount(room.id, -1)}
-                    className="bg-[#aa8453] text-white px-4 py-2 font-bold hover:bg-[#6a5438] transition-colors duration-200"
-                    type="button"
-                  >
-                    -
-                  </button>
-                  <span className="px-6 py-2 text-white">{roomCounts[room.id]}</span>
-                  <button 
-                    onClick={() => updateRoomCount(room.id, 1)}
-                    className="bg-[#aa8453] text-white px-4 py-2 font-bold hover:bg-[#6a5438] transition-colors duration-200"
-                    type="button"
-                  >
-                    +
-                  </button>
-                </div>
-                {roomCounts[room.id] > 0 && (
-                  <p className="mt-2 text-white">
-                    <span className="text-[#aa8453]">{formatCurrency(room.price * roomCounts[room.id])}</span> per night
-                  </p>
-                )}
               </div>
             </div>
           ))}
@@ -234,24 +287,24 @@ const RoomBooking = ({ formData, onContinue }) => {
 
         {/* Total amount summary */}
         {totalAmount > 0 && (
-          <div className="mt-8 bg-black p-6 rounded-lg text-white">
+          <div className="mt-8 bg-gray-800 p-6 rounded-lg text-white shadow-xl">
             <h3 className="text-xl font-bold text-[#aa8453] mb-4">Booking Summary</h3>
-            
+
             {/* Show selected rooms */}
             <div className="space-y-2 mb-4">
               {roomData.map(room => (
                 roomCounts[room.id] > 0 && (
-                  <div key={`summary-${room.id}`} className="flex justify-between">
+                  <div key={`summary-${room.id}`} className="flex justify-between text-lg">
                     <span>{roomCounts[room.id]} x {room.name}</span>
-                    <span>{formatCurrency(room.price * roomCounts[room.id])}</span>
+                    <span>{formatCurrency(room.price * roomCounts[room.id] * nights)}</span> {/* Adjusted to show total per room per nights */}
                   </div>
                 )
               ))}
             </div>
 
-            <div className="flex justify-between font-semibold text-lg border-t border-gray-700 pt-4">
+            <div className="flex justify-between font-bold text-2xl border-t border-gray-700 pt-4">
               <span>Total for {nights} {nights === 1 ? 'night' : 'nights'}</span>
-              <span>{formatCurrency(totalAmount)}</span>
+              <span>{formatCurrency(totalAmount * nights)}</span> {/* Total for all rooms for all nights */}
             </div>
           </div>
         )}
@@ -260,10 +313,11 @@ const RoomBooking = ({ formData, onContinue }) => {
         <div className="mt-10 flex justify-center">
           <button
             onClick={handleContinueBooking}
-            className="bg-[#aa8453] text-black font-bold px-8 py-4 rounded hover:bg-[#6a5438] transition-colors duration-200"
+            className="bg-[#aa8453] text-black font-bold px-8 py-4 rounded hover:bg-[#6a5438] transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             type="button"
+            disabled={isLoading} // Disable button when loading
           >
-            Continue Booking
+            {isLoading ? 'Processing...' : 'Continue Booking'}
           </button>
         </div>
       </div>

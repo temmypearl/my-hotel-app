@@ -1,16 +1,27 @@
 import React, { useState, useEffect } from "react";
-import { Menu, X } from "lucide-react";
-import { Link, useLocation } from "react-router-dom";
+import { Menu, X, User, LogOut, ChevronDown } from "lucide-react"; 
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext"; 
 
 const Navbar = () => {
   const [nav, setNav] = useState(false);
   const [scrolled, setScrolled] = useState(false); 
-  const location = useLocation(); // Get current location/path
+  const [showUserDropdown, setShowUserDropdown] = useState(false); 
+  const location = useLocation();
+  const navigate = useNavigate(); 
+  const { user, isAuthenticated, logout } = useAuth(); 
 
   const handleNav = () => setNav(!nav);
 
   const closeMobileMenu = () => {
     setNav(false);
+  };
+
+  // Add logout handler
+  const handleLogout = () => {
+    logout();
+    setShowUserDropdown(false);
+    navigate('/');
   };
 
   const navItems = [
@@ -36,6 +47,18 @@ const Navbar = () => {
     };     
   }, []);
 
+  // Add click outside handler for dropdown
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (!event.target.closest('.user-dropdown')) {
+        setShowUserDropdown(false);
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, []);
+
   const isActive = (path) => {
     if (path === "/") {
       return false; // Never show underline for home
@@ -46,7 +69,7 @@ const Navbar = () => {
   return (
     <>
       <div
-        className={`fixed top-0 left-0 right-0 flex justify-between items-center px-10 h-24 z-50 ${scrolled ? 'bg-black' : 'bg-transparent'}`}
+        className={`fixed top-0 left-0 right-0 flex justify-between items-center px-10 h-24 z-50 ${scrolled ? 'bg-[#695233]' : 'bg-transparent'}`}
       >
         <div>
           <Link to="/" className="text-[#aa8453] text-xl lg:text-xl font-semibold">
@@ -74,14 +97,48 @@ const Navbar = () => {
             ))}
           </ul>
 
+          {/* Updated Authentication Section */}
           <ul>
             <li className="hidden md:flex">
-              <Link 
-                to="/login"
-                className="text-[#fff] hover:text-[#cec1b0] cursor-pointer border-2 border-[#aa8453] rounded bg-[#aa8453] px-2"
-              >
-                LOGIN
-              </Link>
+              {isAuthenticated ? (
+                // User Widget Dropdown
+                <div className="relative user-dropdown">
+                  <button
+                    onClick={() => setShowUserDropdown(!showUserDropdown)}
+                    className="flex items-center gap-2 text-white hover:text-[#2b2217] cursor-pointer border-2 border-[#aa8453] rounded-full bg-[#aa8453] px-3 py-1 transition-colors"
+                  >
+                    <User size={16} />
+                    <span className="text-sm">
+                      {user?.firstName || 'User'}
+                    </span>
+                    <ChevronDown size={14} className={`transition-transform ${showUserDropdown ? 'rotate-180' : ''}`} />
+                  </button>
+                  
+                  {showUserDropdown && (
+                    <div className="absolute right-0 top-full mt-2 w-48 bg-black border border-[#aa8453] rounded-lg shadow-xl py-2">
+                      <div className="px-4 py-2 border-b border-gray-700">
+                        <p className="text-[#aa8453] text-sm font-semibold">Welcome!</p>
+                        <p className="text-gray-300 text-xs">{user?.email}</p>
+                      </div>
+                      <button
+                        onClick={handleLogout}
+                        className="w-full text-left px-4 py-2 text-white hover:bg-gray-800 hover:text-[#aa8453] transition-colors flex items-center gap-2"
+                      >
+                        <LogOut size={16} />
+                        Logout
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                // Original Login Button
+                <Link 
+                  to="/login"
+                  className="text-[#fff] hover:text-[#cec1b0] cursor-pointer border-2 border-[#aa8453] rounded-full  bg-[#aa8453] px-4 "
+                >
+                  LOGIN
+                </Link>
+              )}
             </li>
           </ul>
         </div>
@@ -126,15 +183,37 @@ const Navbar = () => {
               </li>
             ))}
           </ul>
+          
+          {/* Updated Mobile Authentication Section */}
           <ul className="mt-6 px-6">
             <li>
-              <Link 
-                to="/login"
-                onClick={closeMobileMenu}
-                className="block w-full text-center py-3 bg-[#aa8453] text-white font-semibold rounded-lg border-2 border-[#aa8453] hover:bg-[#d5a464] hover:border-[#d5a464] transition"
-              >
-                LOGIN
-              </Link>
+              {isAuthenticated ? (
+                <div className="space-y-3">
+                  <div className="text-center py-3 bg-gray-800 rounded-lg">
+                    <p className="text-[#aa8453] text-sm font-semibold">Welcome!</p>
+                    <p className="text-gray-300 text-xs">{user?.firstName} {user?.lastName}</p>
+                    <p className="text-gray-400 text-xs">{user?.email}</p>
+                  </div>
+                  <button
+                    onClick={() => {
+                      handleLogout();
+                      closeMobileMenu();
+                    }}
+                    className=" w-full text-center py-3 bg-red-600 text-white font-semibold rounded-lg border-2 border-red-600 hover:bg-red-700 hover:border-red-700 transition flex items-center justify-center gap-2"
+                  >
+                    <LogOut size={16} />
+                    Logout
+                  </button>
+                </div>
+              ) : (
+                <Link 
+                  to="/login"
+                  onClick={closeMobileMenu}
+                  className="block w-full text-center py-3 bg-[#aa8453] text-white font-semibold rounded-lg border-2 border-[#aa8453] hover:bg-[#d5a464] hover:border-[#d5a464] transition"
+                >
+                  LOGIN
+                </Link>
+              )}
             </li>
           </ul>
         </div>

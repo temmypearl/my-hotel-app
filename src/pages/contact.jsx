@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { MapPin, Phone, Mail, Clock, Send } from "lucide-react";
+import { Link } from "react-router-dom";
+
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -232,9 +234,14 @@ const Contact = () => {
               <Phone size={16} />
               <span>Call Now</span>
             </a>
-            <button className="bg-[#aa8453] hover:bg-[#96744a] text-white py-3 px-8 uppercase tracking-wider text-sm transition-colors duration-300">
-              Book Online
-            </button>
+            <Link
+                to="/reservation"
+                className="bg-[#aa8453] hover:bg-[#96744a] text-white py-3 px-8 uppercase tracking-wider text-sm 
+                transition-colors duration-300 text-center"
+          >
+  Book Online
+</Link>
+
           </div>
         </div>
       </div>

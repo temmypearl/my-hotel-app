@@ -104,7 +104,7 @@ const Hero = () => {
                                 {slider.description}
                             </h2>
                             <a 
-                                href="#rooms" 
+                                href="#room" 
                                 className="
                                     inline-block border-2 border-white text-white py-2 px-4 
                                     sm:py-3 sm:px-6 md:py-3 md:px-8

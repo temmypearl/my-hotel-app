@@ -78,7 +78,7 @@ const OTPPage = ({ userEmail, onVerificationComplete, onBack }) => {
     setError('');
 
     try {
-      const response = await axios.post('http://localhost:4005/api/v1/auth/users/verify-account', {
+      const response = await axios.post('http://localhost:4000/api/v1/auth/users/verify-account', {
         verificationCode: otpString  // Updated to match backend
       });
 
